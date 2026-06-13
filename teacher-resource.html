@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#10b981">
+  <title>Вчитель в ресурсі</title>
+  <link rel="manifest" href="data:application/json,{
+    \"name\":\"Вчитель в ресурсі\",
+    \"short_name\":\"Ресурс\",
+    \"start_url\":\"/\",
+    \"display\":\"standalone\",
+    \"background_color\":\"#ffffff\",
+    \"theme_color\":\"#10b981\",
+    \"icons\":[{\"src\":\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Ccircle cx='96' cy='96' r='90' fill='%2310b981'/%3E%3Ctext x='96' y='110' text-anchor='middle' font-size='60' font-weight='bold' fill='white'%3EТ%3C/text%3E%3C/svg%3E\",\"sizes\":\"192x192\",\"type\":\"image/svg+xml\"}]
+  }">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+      overflow: hidden;
+    }
+    body.dark-mode {
+      background: #0f172a;
+      color: #f3f4f6;
+    }
+    .container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      overflow: hidden;
+    }
+    .header {
+      width: 100%;
+      padding: 12px 16px 8px;
+      text-align: center;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 0.5px solid #e5e7eb;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    body.dark-mode .header {
+      background: rgba(15,23,42,0.95);
+      border-bottom-color: #1e293b;
+    }
+    .header h1 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+      color: #059669;
+    }
+    body.dark-mode .header h1 {
+      color: #10b981;
+    }
+    .header-time {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    body.dark-mode .header-time {
+      color: #9ca3af;
+    }
+    .theme-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 8px;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      width: 100%;
+      overflow-y: auto;
+    }
+    .flower-container {
+      width: 240px;
+      height: 240px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .status-text {
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 12px;
+      color: #374151;
+      height: 20px;
+      transition: color 0.3s ease;
+    }
+    body.dark-mode .status-text {
+      color: #d1d5db;
+    }
+    .affective-display {
+      width: 100%;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .metric {
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    body.dark-mode .metric {
+      background: #1e293b;
+    }
+    .metric-label {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    body.dark-mode .metric-label {
+      color: #9ca3af;
+    }
+    .metric-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #059669;
+    }
+    body.dark-mode .metric-value {
+      color: #10b981;
+    }
+    .action-button {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    }
+    .action-button:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    }
+    .action-button.yellow {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      box-shadow: 0 4px 6px rgba(251, 191, 36, 0.3);
+    }
+    .action-button.orange {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);
+    }
+    .action-button.red {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+    }
+    body.dark-mode .action-button.yellow:active,
+    body.dark-mode .action-button.orange:active,
+    body.dark-mode .action-button.red:active {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+    .secondary-actions {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .secondary-btn {
+      flex: 1;
+      padding: 12px;
+      background: #f3f4f6;
+      border: 0.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #374151;
+    }
+    body.dark-mode .secondary-btn {
+      background: #1e293b;
+      border-color: #475569;
+      color: #d1d5db;
+    }
+    .secondary-btn:active {
+      background: #e5e7eb;
+    }
+    body.dark-mode .secondary-btn:active {
+      background: #334155;
+    }
+    .tips-section {
+      width: 100%;
+      background: #f0f9ff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #bfdbfe;
+    }
+    body.dark-mode .tips-section {
+      background: #0c2340;
+      border-color: #0369a1;
+    }
+    .tip-icon {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .tip-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #0369a1;
+    }
+    body.dark-mode .tip-text {
+      color: #06b6d4;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      max-height: 80vh;
+      overflow-y: auto;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    body.dark-mode .modal-content {
+      background: #1e293b;
+      color: #f3f4f6;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 4px;
+    }
+    body.dark-mode .modal-close {
+      color: #9ca3af;
+    }
+    .breathing-exercise {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .breath-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: #dbeafe;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      animation: breathe 4s infinite;
+    }
+    body.dark-mode .breath-circle {
+      background: #0c2340;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+    .breath-text {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+    body.dark-mode .breath-text {
+      color: #9ca3af;
+    }
+    .timer {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0369a1;
+      margin: 12px 0;
+    }
+    .affirmation {
+      font-size: 18px;
+      font-style: italic;
+      color: #059669;
+      line-height: 1.6;
+      margin: 16px 0;
+    }
+    body.dark-mode .affirmation {
+      color: #10b981;
+    }
+    .emoji {
+      font-size: 36px;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    @media (max-height: 600px) {
+      .main {
+        padding: 12px 16px;
+      }
+      .flower-container {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 12px;
+      }
+      .affective-display {
+        margin-bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span style="width: 32px;"></span>
+      <div>
+        <h1>Вчитель в ресурсі</h1>
+        <div class="header-time" id="current-time"></div>
+      </div>
+      <button class="theme-toggle" id="theme-toggle" title="Темна тема">🌙</button>
+    </div>
+
+    <div class="main">
+      <div class="flower-container">
+        <svg id="flower" width="240" height="240" viewBox="0 0 240 240" style="filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));">
+          <!-- Leaves -->
+          <ellipse cx="60" cy="100" rx="30" ry="50" fill="#d1fae5" opacity="0.6" transform="rotate(-35 60 100)"/>
+          <ellipse cx="180" cy="100" rx="30" ry="50" fill="#d1fae5" opacity="0.6" transform="rotate(35 180 100)"/>
+          
+          <!-- Petals (will change color) -->
+          <circle id="petal-top" cx="120" cy="50" r="28" fill="#10b981" class="petal"/>
+          <circle id="petal-tr" cx="170" cy="70" r="28" fill="#10b981" class="petal"/>
+          <circle id="petal-br" cx="170" cy="170" r="28" fill="#10b981" class="petal"/>
+          <circle id="petal-bottom" cx="120" cy="190" r="28" fill="#10b981" class="petal"/>
+          <circle id="petal-bl" cx="70" cy="170" r="28" fill="#10b981" class="petal"/>
+          <circle id="petal-tl" cx="70" cy="70" r="28" fill="#10b981" class="petal"/>
+          
+          <!-- Center -->
+          <circle cx="120" cy="120" r="32" fill="#fef08a" id="flower-center"/>
+          <circle cx="120" cy="120" r="32" fill="#fbbf24" opacity="0.3" style="animation: glow 2s ease-in-out infinite;"/>
+          
+          <!-- Center details -->
+          <circle cx="110" cy="110" r="4" fill="#dc2626" opacity="0.8"/>
+          <circle cx="130" cy="110" r="4" fill="#dc2626" opacity="0.8"/>
+          <circle cx="120" cy="130" r="5" fill="#dc2626" opacity="0.7"/>
+        </svg>
+      </div>
+
+      <div class="status-text" id="status-text">🌱 Енергійний стан</div>
+
+      <div class="affective-display" id="affective-display">
+        <div class="metric">
+          <div class="metric-label">Тривога</div>
+          <div class="metric-value" id="anxiety">25</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Виснаження</div>
+          <div class="metric-value" id="exhaustion">30</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Дратівливість</div>
+          <div class="metric-value" id="irritability">20</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Стрес</div>
+          <div class="metric-value" id="stress">28</div>
+        </div>
+      </div>
+
+      <div class="tips-section" id="tips-section">
+        <div class="tip-icon">💡</div>
+        <div class="tip-text" id="tip-text">Змінюйте метрики для див себе у різних станах. Спробуйте натиснути "Перевірити" для автоматичної оцінки.</div>
+      </div>
+
+      <div class="secondary-actions">
+        <button class="secondary-btn" id="check-btn" onclick="simulateMetrics()">✓ Перевірити</button>
+        <button class="secondary-btn" onclick="randomizeMetrics()">🎲 Випадково</button>
+        <button class="secondary-btn" onclick="resetMetrics()">↺ Скинути</button>
+      </div>
+
+      <button class="action-button" id="main-action" onclick="openMainAction()">Дихальна вправа</button>
+    </div>
+  </div>
+
+  <!-- Breathing Modal -->
+  <div class="modal" id="breathing-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div class="breathing-exercise">
+        <div class="tip-icon">🌬️</div>
+        <h2 style="font-size: 18px; margin-bottom: 16px;">Дихання квадратом (Box Breathing)</h2>
+        <div class="breath-circle">
+          <span id="breath-instruction">Вдих</span>
+        </div>
+        <div class="breath-text" id="breath-phase">Вдихайте 4 секунди...</div>
+        <div class="timer" id="breath-timer">0:04</div>
+        <p style="color: #6b7280; font-size: 12px; margin-top: 12px;">Цей метод допомагає заспокоїти нервову систему через ритмічне дихання.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stress Spike Modal -->
+  <div class="modal" id="crisis-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div style="text-align: center;">
+        <div class="emoji">🆘</div>
+        <h2 style="font-size: 20px; margin-bottom: 16px;">Ви на межі!</h2>
+        <div class="affirmation">«Ти не одна. Ти в ресурсі. Ти можеш далі»</div>
+        <p style="font-size: 13px; color: #6b7280; margin-bottom: 16px;">Поточна ситуація потребує негайної підтримки. Ось що ми рекомендуємо:</p>
+        <div style="text-align: left; background: #fef3c7; padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #fbbf24;">
+          <p style="font-size: 13px; margin: 8px 0; color: #78350f;">
+            ✓ Робіть дихальну вправу<br>
+            ✓ Вийдіть на вулицю на 5 хвилин<br>
+            ✓ Напийтеся води<br>
+            ✓ Зв'яжіться з психологом школи
+          </p>
+        </div>
+        <button class="action-button" onclick="openBreathingExercise()">Почати дихання</button>
+        <button class="secondary-btn" style="width: 100%; margin-top: 12px;" onclick="callHotline()">☎️ Гарячої лінії</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Register Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('data:application/javascript,' + encodeURIComponent(`
+        self.addEventListener('install', e => self.skipWaiting());
+        self.addEventListener('activate', e => self.clients.claim());
+      `));
+    }
+
+    // State management
+    let currentState = 'green';
+    let metrics = {
+      anxiety: 25,
+      exhaustion: 30,
+      irritability: 20,
+      stress: 28
+    };
+
+    const states = {
+      green: {
+        emoji: '🌱',
+        name: 'Енергійний стан',
+        description: 'Ви в добрій формі',
+        color: '#10b981',
+        darkColor: '#059669',
+        actionText: 'Дихальна вправа',
+        tip: '💡 Відмінно! Скористайтеся цією енергією для важливих справ.',
+        tipColor: '#f0fdf4',
+        tipBorder: '#bbf7d0'
+      },
+      yellow: {
+        emoji: '😴',
+        name: 'Втомлений стан',
+        description: 'Потреба у невеликій паузі',
+        color: '#fbbf24',
+        darkColor: '#f59e0b',
+        actionText: 'Пауза на 3 хвилини',
+        tip: '☕ Спробуйте чай без оцінювання або коротку прогулянку.',
+        tipColor: '#fffbeb',
+        tipBorder: '#fed7aa'
+      },
+      orange: {
+        emoji: '⚠️',
+        name: 'На межі можливостей',
+        description: 'Потрібна негайна підтримка',
+        color: '#f97316',
+        darkColor: '#ea580c',
+        actionText: 'Техніка спокою',
+        tip: '🧠 Як справді складно? Подумайте про звернення до психолога школи.',
+        tipColor: '#fff7ed',
+        tipBorder: '#fed7aa'
+      },
+      red: {
+        emoji: '🆘',
+        name: 'Критичний стан',
+        description: 'Потреба у професійній допомозі',
+        color: '#ef4444',
+        darkColor: '#dc2626',
+        actionText: 'Гаряча лінія',
+        tip: '📞 Не вагайтеся звернутися до фахівців. Ви вартісні.',
+        tipColor: '#fef2f2',
+        tipBorder: '#fecaca'
+      }
+    };
+
+    function calculateState() {
+      const avgStress = (metrics.anxiety + metrics.exhaustion + metrics.irritability + metrics.stress) / 4;
+      
+      if (avgStress < 40) return 'green';
+      if (avgStress < 60) return 'yellow';
+      if (avgStress < 80) return 'orange';
+      return 'red';
+    }
+
+    function updateUI() {
+      const newState = calculateState();
+      if (newState !== currentState) {
+        currentState = newState;
+        updateFlower();
+      }
+
+      const stateConfig = states[currentState];
+      document.getElementById('status-text').textContent = `${stateConfig.emoji} ${stateConfig.name}`;
+      document.getElementById('anxiety').textContent = Math.round(metrics.anxiety);
+      document.getElementById('exhaustion').textContent = Math.round(metrics.exhaustion);
+      document.getElementById('irritability').textContent = Math.round(metrics.irritability);
+      document.getElementById('stress').textContent = Math.round(metrics.stress);
+
+      document.getElementById('tip-text').textContent = stateConfig.tip;
+      const tipsSection = document.getElementById('tips-section');
+      tipsSection.style.background = stateConfig.tipColor;
+      tipsSection.style.borderColor = stateConfig.tipBorder;
+
+      const mainBtn = document.getElementById('main-action');
+      mainBtn.textContent = stateConfig.actionText;
+      mainBtn.className = `action-button ${currentState === 'green' ? '' : currentState}`;
+    }
+
+    function updateFlower() {
+      const petals = document.querySelectorAll('.petal');
+      const colorMap = {
+        green: '#10b981',
+        yellow: '#fbbf24',
+        orange: '#f97316',
+        red: '#ef4444'
+      };
+      
+      petals.forEach(petal => {
+        petal.style.transition = 'fill 0.6s ease';
+        petal.style.fill = colorMap[currentState];
+      });
+
+      const center = document.getElementById('flower-center');
+      const centerColorMap = {
+        green: '#fef08a',
+        yellow: '#fed7aa',
+        orange: '#fed7aa',
+        red: '#fca5a5'
+      };
+      center.style.fill = centerColorMap[currentState];
+    }
+
+    function simulateMetrics() {
+      // Simulate realistic biometric reading
+      metrics.anxiety = Math.max(20, metrics.anxiety + (Math.random() - 0.5) * 30);
+      metrics.exhaustion = Math.max(20, metrics.exhaustion + (Math.random() - 0.5) * 30);
+      metrics.irritability = Math.max(15, metrics.irritability + (Math.random() - 0.5) * 25);
+      metrics.stress = Math.max(20, metrics.stress + (Math.random() - 0.5) * 30);
+
+      metrics.anxiety = Math.min(100, metrics.anxiety);
+      metrics.exhaustion = Math.min(100, metrics.exhaustion);
+      metrics.irritability = Math.min(100, metrics.irritability);
+      metrics.stress = Math.min(100, metrics.stress);
+
+      updateUI();
+    }
+
+    function randomizeMetrics() {
+      metrics.anxiety = 20 + Math.random() * 80;
+      metrics.exhaustion = 20 + Math.random() * 80;
+      metrics.irritability = 15 + Math.random() * 80;
+      metrics.stress = 20 + Math.random() * 80;
+      updateUI();
+    }
+
+    function resetMetrics() {
+      metrics = { anxiety: 25, exhaustion: 30, irritability: 20, stress: 28 };
+      updateUI();
+    }
+
+    function openMainAction() {
+      if (currentState === 'red') {
+        document.getElementById('crisis-modal').classList.add('active');
+      } else {
+        openBreathingExercise();
+      }
+    }
+
+    function openBreathingExercise() {
+      closeModal();
+      document.getElementById('breathing-modal').classList.add('active');
+      
+      let breathPhase = 0;
+      let second = 0;
+      
+      const phases = [
+        { name: 'Вдих', duration: 4, instruction: '⬇️' },
+        { name: 'Затримка', duration: 4, instruction: '⏸️' },
+        { name: 'Видих', duration: 4, instruction: '⬆️' },
+        { name: 'Затримка', duration: 4, instruction: '⏸️' }
+      ];
+      
+      let totalSeconds = 4;
+      const breathingInterval = setInterval(() => {
+        second++;
+        
+        if (second >= phases[breathPhase].duration) {
+          second = 0;
+          breathPhase = (breathPhase + 1) % 4;
+        }
+        
+        const remaining = phases[breathPhase].duration - second;
+        document.getElementById('breath-timer').textContent = `0:0${remaining}`;
+        document.getElementById('breath-instruction').textContent = phases[breathPhase].instruction;
+        document.getElementById('breath-phase').textContent = `${phases[breathPhase].name}...`;
+        
+        if (totalSeconds >= 60) {
+          clearInterval(breathingInterval);
+          document.getElementById('breath-phase').textContent = '✓ Вправа завершена!';
+          document.getElementById('breath-instruction').textContent = '🙏';
+        }
+        
+        totalSeconds++;
+      }, 1000);
+    }
+
+    function callHotline() {
+      alert('📞 Гарячої лінії психологічної підтримки:\n\n"Розкажи мені": 0 800 500 450\n\nЦе безкоштовно і конфіденційно.');
+    }
+
+    function closeModal() {
+      document.getElementById('breathing-modal').classList.remove('active');
+      document.getElementById('crisis-modal').classList.remove('active');
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+    }
+
+    // Theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+
+    // Initialize
+    updateTime();
+    setInterval(updateTime, 60000);
+    updateUI();
+
+    // Keyboard support for metrics
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '+') randomizeMetrics();
+      if (e.key === '0') resetMetrics();
+    });
+
+    // Add some CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes glow {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.7; }
+      }
+      .petal {
+        transition: fill 0.6s ease;
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

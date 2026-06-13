@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#10b981">
+  <title>Вчитель в ресурсі — Розширена версія</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #1f2937;
+      overflow: hidden;
+    }
+    body.dark-mode {
+      background: #0f172a;
+      color: #f3f4f6;
+    }
+    .app-container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .app-header {
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.98);
+      border-bottom: 0.5px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+    }
+    body.dark-mode .app-header {
+      background: rgba(15,23,42,0.98);
+      border-bottom-color: #1e293b;
+    }
+    .app-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #059669;
+    }
+    body.dark-mode .app-title {
+      color: #10b981;
+    }
+    .app-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 0.5px solid #e5e7eb;
+      background: rgba(255,255,255,0.95);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    body.dark-mode .app-tabs {
+      background: rgba(15,23,42,0.95);
+      border-bottom-color: #1e293b;
+    }
+    .tab {
+      flex: 1;
+      padding: 12px 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      min-width: 80px;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    body.dark-mode .tab {
+      color: #9ca3af;
+    }
+    .tab.active {
+      color: #059669;
+      border-bottom-color: #10b981;
+    }
+    body.dark-mode .tab.active {
+      color: #10b981;
+    }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px;
+      display: none;
+    }
+    .content.active {
+      display: block;
+    }
+    .content-section {
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    body.dark-mode .section-title {
+      color: #d1d5db;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .metric-card {
+      background: #f3f4f6;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+    }
+    body.dark-mode .metric-card {
+      background: #1e293b;
+    }
+    .metric-label {
+      font-size: 10px;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    body.dark-mode .metric-label {
+      color: #9ca3af;
+    }
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #059669;
+    }
+    body.dark-mode .metric-value {
+      color: #10b981;
+    }
+    .action-card {
+      background: #f0fdf4;
+      border-radius: 8px;
+      border-left: 4px solid #10b981;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    body.dark-mode .action-card {
+      background: #064e3b;
+      border-left-color: #10b981;
+    }
+    .action-text {
+      font-size: 13px;
+      color: #15803d;
+      line-height: 1.5;
+    }
+    body.dark-mode .action-text {
+      color: #dcfce7;
+    }
+    .history-item {
+      background: #f9fafb;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-left: 3px solid #cbd5e1;
+      font-size: 12px;
+    }
+    body.dark-mode .history-item {
+      background: #1e293b;
+      border-left-color: #475569;
+    }
+    .history-time {
+      color: #6b7280;
+      font-size: 11px;
+    }
+    body.dark-mode .history-time {
+      color: #9ca3af;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    body.dark-mode .progress-bar {
+      background: #334155;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      transition: width 0.4s ease;
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .btn {
+      flex: 1;
+      padding: 12px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 0.5px solid #d1d5db;
+    }
+    body.dark-mode .btn-secondary {
+      background: #1e293b;
+      color: #d1d5db;
+      border-color: #475569;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 0.5px solid #e5e7eb;
+      font-size: 13px;
+    }
+    body.dark-mode .stat-row {
+      border-bottom-color: #334155;
+    }
+    .stat-label {
+      color: #6b7280;
+    }
+    body.dark-mode .stat-label {
+      color: #9ca3af;
+    }
+    .stat-value {
+      font-weight: 600;
+      color: #059669;
+    }
+    body.dark-mode .stat-value {
+      color: #10b981;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+    body.dark-mode .loading {
+      color: #9ca3af;
+    }
+    .emoji-large {
+      font-size: 32px;
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="app-header">
+      <div class="app-title">🌸 Вчитель в ресурсі</div>
+      <div style="font-size: 12px; color: #6b7280;">
+        <button id="theme-btn" style="background: none; border: none; cursor: pointer; font-size: 16px;">🌙</button>
+      </div>
+    </div>
+
+    <div class="app-tabs">
+      <div class="tab active" onclick="switchTab('dashboard')">📊 Стан</div>
+      <div class="tab" onclick="switchTab('actions')">⚡ Дії</div>
+      <div class="tab" onclick="switchTab('history')">📈 Історія</div>
+      <div class="tab" onclick="switchTab('settings')">⚙️ Налаштування</div>
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div id="dashboard" class="content active">
+      <div class="content-section">
+        <div class="section-title">📍 Ваш поточний стан</div>
+        <div style="text-align: center; margin: 20px 0;">
+          <div style="font-size: 48px;" id="state-emoji">🌱</div>
+          <div style="font-size: 18px; font-weight: 600; color: #059669; margin-top: 8px;" id="state-name">Енергійний</div>
+          <div style="font-size: 12px; color: #6b7280; margin-top: 4px;" id="state-desc">Ви в добрій формі</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">📊 Метрики</div>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Тривога</div>
+            <div class="metric-value" id="m-anxiety">25</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">/ 100</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Виснаження</div>
+            <div class="metric-value" id="m-exhaustion">30</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">/ 100</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Дратівливість</div>
+            <div class="metric-value" id="m-irritability">20</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">/ 100</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Стрес</div>
+            <div class="metric-value" id="m-stress">28</div>
+            <div style="font-size: 11px; color: #6b7280; margin-top: 4px;">/ 100</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">🎯 Рекомендована дія</div>
+        <div class="action-card">
+          <div class="action-text" id="recommendation">Змінюйте метрики, щоб бачити персоналізовані рекомендації</div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="testMetrics()">✓ Тест метрик</button>
+        <button class="btn" onclick="getAIAction()">✨ AI рекомендація</button>
+      </div>
+    </div>
+
+    <!-- Actions Tab -->
+    <div id="actions" class="content">
+      <div class="content-section">
+        <div class="section-title">🧘 Швидкі вправи</div>
+        <div class="action-card" onclick="showExercise('breathing')" style="cursor: pointer; margin-bottom: 8px;">
+          <div class="action-text">🌬️ <strong>Дихання квадратом</strong> — 4 хвилини скорочення стресу</div>
+        </div>
+        <div class="action-card" onclick="showExercise('grounding')" style="cursor: pointer; margin-bottom: 8px;">
+          <div class="action-text">🌍 <strong>5-4-3-2-1 Заземлення</strong> — повернутись в тіло</div>
+        </div>
+        <div class="action-card" onclick="showExercise('affirmation')" style="cursor: pointer;">
+          <div class="action-text">💫 <strong>Афірмації</strong> — посилення впевненості</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">💡 Поради для класу</div>
+        <div class="action-card">
+          <div class="action-text" id="classroom-tip">Натисніть для нової поради...</div>
+        </div>
+        <button class="btn btn-secondary" onclick="generateClassroomTip()" style="width: 100%;">🔄 Нова порада</button>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">📞 Психологічна підтримка</div>
+        <div class="stat-row">
+          <span class="stat-label">Гарячої лінії «Розкажи мені»</span>
+          <span class="stat-value">0 800 500 450</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Шкільний психолог</span>
+          <span class="stat-value">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Tab -->
+    <div id="history" class="content">
+      <div class="content-section">
+        <div class="section-title">📈 Прогрес</div>
+        <div style="padding: 12px; background: #f0fdf4; border-radius: 8px; margin-bottom: 16px;">
+          <div style="font-size: 12px; color: #15803d; margin-bottom: 8px;">Рівень ресурсу за останні 7 днів</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 72%;"></div>
+          </div>
+          <div style="font-size: 11px; color: #6b7280;">72% часу — добрий стан</div>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">🕐 Остання активність</div>
+        <div class="history-item">
+          <div style="color: #1f2937;">✓ Виконана дихальна вправа</div>
+          <div class="history-time">Сьогодні, 14:32</div>
+        </div>
+        <div class="history-item">
+          <div style="color: #1f2937;">📊 Оновлені метрики</div>
+          <div class="history-time">Сьогодні, 13:15</div>
+        </div>
+        <div class="history-item">
+          <div style="color: #1f2937;">🌱 Перейшли у зелену зону</div>
+          <div class="history-time">Сьогодні, 12:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div id="settings" class="content">
+      <div class="content-section">
+        <div class="section-title">⚙️ Додаток</div>
+        <div class="stat-row">
+          <span class="stat-label">Темна тема</span>
+          <input type="checkbox" id="dark-toggle" style="cursor: pointer;">
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Сповіщення</span>
+          <input type="checkbox" id="notif-toggle" checked style="cursor: pointer;">
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">👤 Мій профіль</div>
+        <div style="padding: 12px; background: #f9fafb; border-radius: 8px; margin-bottom: 12px;">
+          <input type="text" placeholder="Ваше ім'я" id="teacher-name" style="width: 100%; padding: 8px; border: 0.5px solid #d1d5db; border-radius: 6px; font-size: 13px; margin-bottom: 8px;">
+          <select id="school-grade" style="width: 100%; padding: 8px; border: 0.5px solid #d1d5db; border-radius: 6px; font-size: 13px;">
+            <option>-- Виберіть клас --</option>
+            <option>Початкова школа (1-4)</option>
+            <option>Середня школа (5-9)</option>
+            <option>Старша школа (10-11)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="content-section">
+        <div class="section-title">📦 Інформація</div>
+        <div class="stat-row">
+          <span class="stat-label">Версія</span>
+          <span class="stat-value">1.0.0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Статус</span>
+          <span class="stat-value">✓ Готово</span>
+        </div>
+      </div>
+
+      <div style="padding: 12px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0369a1; margin-top: 20px;">
+        <div style="font-size: 12px; color: #0369a1; line-height: 1.5;">
+          <p style="margin-bottom: 8px;"><strong>Конфіденційність:</strong> Усі ваші дані зберігаються локально на вашому пристрої. Нічого не передається в хмару без вашої згоди.</p>
+          <p style="font-size: 11px; color: #0369a1; opacity: 0.8;">Версія 2027-Q2 | Львівська лабораторія EdTech + Mental Health</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State management
+    let currentMetrics = {
+      anxiety: 25,
+      exhaustion: 30,
+      irritability: 20,
+      stress: 28
+    };
+
+    const stateConfig = {
+      green: {
+        emoji: '🌱',
+        name: 'Енергійний',
+        desc: 'Ви в добрій формі'
+      },
+      yellow: {
+        emoji: '😴',
+        name: 'Втомлений',
+        desc: 'Потреба у невеликій паузі'
+      },
+      orange: {
+        emoji: '⚠️',
+        name: 'На межі',
+        desc: 'Потрібна підтримка'
+      },
+      red: {
+        emoji: '🆘',
+        name: 'Критичний',
+        desc: 'Потреба у допомозі'
+      }
+    };
+
+    const tips = [
+      'Вийдіть на 5 хвилин на свіжу повітря — це більш ефективно, ніж кава.',
+      'Спробуйте техніку "4-7-8": вдих на 4, затримка на 7, видих на 8. Дуже розслаблює.',
+      'Напишіть учням: "Хлопці, мені сьогодні складно, але ми разом це подолаємо".',
+      'Зніміть туфлі та поставте ноги на землю на 2 хвилини — заземлення.',
+      'Включіть улюблену пісню на 3 хвилини і танцюйте. Звучить дивно, але працює.',
+      'Позовіть колегу за партою. Іноді просто розмова врятовує.',
+      'Спробуйте холодну воду на обличчя — активує парасимпатичну систему.',
+      'Напейтеся гарячого чаю та просто сидіть 5 хвилин без телефону.'
+    ];
+
+    function getState() {
+      const avg = (currentMetrics.anxiety + currentMetrics.exhaustion + currentMetrics.irritability + currentMetrics.stress) / 4;
+      if (avg < 40) return 'green';
+      if (avg < 60) return 'yellow';
+      if (avg < 80) return 'orange';
+      return 'red';
+    }
+
+    function updateDashboard() {
+      const state = getState();
+      const config = stateConfig[state];
+      
+      document.getElementById('state-emoji').textContent = config.emoji;
+      document.getElementById('state-name').textContent = config.name;
+      document.getElementById('state-desc').textContent = config.desc;
+      
+      document.getElementById('m-anxiety').textContent = Math.round(currentMetrics.anxiety);
+      document.getElementById('m-exhaustion').textContent = Math.round(currentMetrics.exhaustion);
+      document.getElementById('m-irritability').textContent = Math.round(currentMetrics.irritability);
+      document.getElementById('m-stress').textContent = Math.round(currentMetrics.stress);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', t.innerText.includes(tabName === 'dashboard' ? '📊' : tabName === 'actions' ? '⚡' : tabName === 'history' ? '📈' : '⚙️'));
+      });
+      
+      document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+      document.getElementById(tabName).classList.add('active');
+    }
+
+    function testMetrics() {
+      currentMetrics.anxiety = 20 + Math.random() * 80;
+      currentMetrics.exhaustion = 20 + Math.random() * 80;
+      currentMetrics.irritability = 15 + Math.random() * 80;
+      currentMetrics.stress = 20 + Math.random() * 80;
+      updateDashboard();
+    }
+
+    function getAIAction() {
+      const state = getState();
+      const recommendations = {
+        green: '✨ Чудово! Ви в ресурсі. Це гарний момент, щоб спланувати важливі справи або допомогти колегам.',
+        yellow: '☕ Потребуєте паузи. Спробуйте короткий перерв на чай чи прогулянку. 5 хвилин — і відчуєте різницю.',
+        orange: '⚠️ Ви на межі. Негайно: дихальна вправа, звернення до психолога школи або до гарячої лінії.',
+        red: '🆘 Критична ситуація. Будь ласка, звоніть "Розкажи мені": 0 800 500 450 або идіть до школьного психолога. Ви вартісні.'
+      };
+      document.getElementById('recommendation').textContent = recommendations[state];
+    }
+
+    function generateClassroomTip() {
+      const tip = tips[Math.floor(Math.random() * tips.length)];
+      document.getElementById('classroom-tip').textContent = tip;
+    }
+
+    function showExercise(type) {
+      const exercises = {
+        breathing: '🌬️ Дихання квадратом\n\n1. Вдихайте на 4 рахунки\n2. Затримайте на 4 рахунки\n3. Видихайте на 4 рахунки\n4. Затримайте на 4 рахунки\n\nПовторіть 5 разів.\n\nЦе нормалізує серцевий ритм за 2-3 хвилини.',
+        grounding: '🌍 Техніка 5-4-3-2-1\n\nЗназвіть:\n• 5 речей, які ви бачите\n• 4 речі, які ви чуєте\n• 3 речи, які ви можете доторкнутись\n• 2 речи, які ви пахнете\n• 1 річ, яку ви смакуєте\n\nЦе повернення до реальності.',
+        affirmation: '💫 Афірмації для педагога\n\n• Я роблю достатньо\n• Мої дитини мене потребують\n• Я сильна\n• Я можу впоратися\n• Я гідна підтримки\n\nПовторіть 3 рази перед дзеркалом.'
+      };
+      alert(exercises[type]);
+    }
+
+    document.getElementById('theme-btn').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('teacher-theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    });
+
+    document.getElementById('dark-toggle').addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    if (localStorage.getItem('teacher-theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('dark-toggle').checked = true;
+    }
+
+    // Initialize
+    updateDashboard();
+    generateClassroomTip();
+    getAIAction();
+  </script>
+</body>
+</html>
